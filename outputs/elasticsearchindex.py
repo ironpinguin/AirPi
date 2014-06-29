@@ -1,7 +1,7 @@
 import output
 import requests
 import json
-import time
+from datetime import datetime
 
 class ElasticsearchIndex(output.Output):
 	requiredData = ["Url","Index"]
@@ -13,7 +13,7 @@ class ElasticsearchIndex(output.Output):
 		arr = {}
 		for i in dataPoints:
 			arr[i["name"]] = i["value"]
-                arr['@timestamp'] = str(time.time())
+                arr['messure_date'] = datetime.utcnow().isoformat() + 'Z'
 		a = json.dumps(arr)
 		try:
 			z = requests.post(self.Url,data=a)
