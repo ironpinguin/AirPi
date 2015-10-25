@@ -32,7 +32,7 @@ class InfluxDb(output.Output):
 			z = requests.post(
 				self.Url + "/write?db=" + self.Database,
 				verify=False,
-				auth=HTTPBasicAuth(self.User, self.Password)
+				auth=HTTPBasicAuth(self.User, self.Password),
 				data=postBody
 			)
             z.status_code
