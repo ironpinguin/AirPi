@@ -1,6 +1,7 @@
 import output
 import requests
 import time
+from requests.auth import HTTPBasicAuth
 
 class InfluxDb(output.Output):
 	requiredData = ["Host","Port","Ssl","Database","User","Password","DataHostName"]
@@ -24,7 +25,7 @@ class InfluxDb(output.Output):
 			messure_point = "airpi_" + i['name']
 			messure_point += ",host=" + self.dataHostName
 			messure_point += ",symbol=" + i['symbol']
-			messure_point += " value=" + i['value']
+			messure_point += " value=" + str(i['value'])
 			messure_point += " " + nanotimestamp
 			messure_points.append(messure_point)
 		postBody = "\n".join(messure_points)
@@ -35,7 +36,6 @@ class InfluxDb(output.Output):
 				auth=HTTPBasicAuth(self.User, self.Password),
 				data=postBody
 			)
-            z.status_code
 			if z.status_code != 204:
 				print "InfluxDb Error: " + z.text
 				return False
