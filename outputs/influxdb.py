@@ -11,7 +11,7 @@ class InfluxDb(output.Output):
 		if (data["Ssl"]):
 			self.Url = "https://"
 		self.Url += data["Host"]
-		self.Url += ":" + data["Port"] + "/"
+		self.Url += ":" + data["Port"]
 		self.Database=data["Database"]
 		self.User=data["User"]
 		self.Password=data["Password"]
