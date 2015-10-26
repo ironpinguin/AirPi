@@ -10,8 +10,7 @@ import os
 from importlib import import_module
 from sys import exit
 from sensors import sensorLoader
-from outputs import output
-
+from outputs import outputLoader
 
 if not os.path.isfile('sensors.cfg'):
 	print "Unable to access config file: sensors.cfg"
