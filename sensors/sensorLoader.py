@@ -11,6 +11,11 @@ class SensorLoader():
     def __init__(self, sensorConfig):
         self.sensorConfig = sensorConfig
 
+    def get_subclasses(mod,cls):
+        for name, obj in inspect.getmembers(mod):
+            if hasattr(obj, "__bases__") and cls in obj.__bases__:
+                return obj
+
     def loadSensors(self):
         sensorPlugins = []
         sensorNames = self.sensorConfig.sections()
@@ -35,7 +40,7 @@ class SensorLoader():
                         raise
 
                     try:
-                        sensorClass = get_subclasses(mod,sensor.Sensor)
+                        sensorClass = self.get_subclasses(mod,sensor.Sensor)
                         if sensorClass == None:
                             raise AttributeError
                     except Exception:

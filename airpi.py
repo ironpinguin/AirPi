@@ -29,7 +29,7 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM) #Use BCM GPIO numbers.
 
 loader = sensorLoader.SensorLoader(sensorConfig)
-sensorPlugins = loader()
+sensorPlugins = loader.loadSensors()
 
 if not os.path.isfile("outputs.cfg"):
 	print "Unable to access config file: outputs.cfg"
