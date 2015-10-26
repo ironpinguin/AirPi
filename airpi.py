@@ -7,6 +7,7 @@ import ConfigParser
 import time
 import inspect
 import os
+from importlib import import_module
 from sys import exit
 from sensors import sensor
 from outputs import output
@@ -31,7 +32,7 @@ GPIO.setmode(GPIO.BCM) #Use BCM GPIO numbers.
 
 sensorPlugins = []
 for i in sensorNames:
-	try:	
+	try:
 		try:
 			filename = sensorConfig.get(i,"filename")
 		except Exception:
@@ -45,12 +46,12 @@ for i in sensorNames:
 		#if enabled, load the plugin
 		if enabled:
 			try:
-				mod = __import__('sensors.'+filename,fromlist=['a']) #Why does this work?
+				mod = import_module('sensors.'+filename)
 			except Exception:
 				print("Error: could not import sensor module " + filename)
 				raise
 
-			try:	
+			try:
 				sensorClass = get_subclasses(mod,sensor.Sensor)
 				if sensorClass == None:
 					raise AttributeError
@@ -58,7 +59,7 @@ for i in sensorNames:
 				print("Error: could not find a subclass of sensor.Sensor in module " + filename)
 				raise
 
-			try:	
+			try:
 				reqd = sensorClass.requiredData
 			except Exception:
 				reqd =  []
@@ -70,7 +71,7 @@ for i in sensorNames:
 			pluginData = {}
 
 			class MissingField(Exception): pass
-						
+
 			for requiredField in reqd:
 				if sensorConfig.has_option(i,requiredField):
 					pluginData[requiredField]=sensorConfig.get(i,requiredField)
@@ -99,7 +100,7 @@ outputNames = outputConfig.sections()
 outputPlugins = []
 
 for i in outputNames:
-	try:	
+	try:
 		try:
 			filename = outputConfig.get(i,"filename")
 		except Exception:
@@ -113,19 +114,19 @@ for i in outputNames:
 		#if enabled, load the plugin
 		if enabled:
 			try:
-				mod = __import__('outputs.'+filename,fromlist=['a']) #Why does this work?
+				mod = import_module('outputs.'+filename)
 			except Exception:
 				print("Error: could not import output module " + filename)
 				raise
 
-			try:	
+			try:
 				outputClass = get_subclasses(mod,output.Output)
 				if outputClass == None:
 					raise AttributeError
 			except Exception:
 				print("Error: could not find a subclass of output.Output in module " + filename)
 				raise
-			try:	
+			try:
 				reqd = outputClass.requiredData
 			except Exception:
 				reqd =  []
@@ -133,16 +134,16 @@ for i in outputNames:
 				opt = outputClass.optionalData
 			except Exception:
 				opt = []
-			
+
 			if outputConfig.has_option(i,"async"):
 				async = outputConfig.getbool(i,"async")
 			else:
 				async = False
-			
+
 			pluginData = {}
 
 			class MissingField(Exception): pass
-						
+
 			for requiredField in reqd:
 				if outputConfig.has_option(i,requiredField):
 					pluginData[requiredField]=outputConfig.get(i,requiredField)
