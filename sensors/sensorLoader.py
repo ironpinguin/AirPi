@@ -3,6 +3,7 @@ import ConfigParser
 import time
 import inspect
 import os
+import sensor
 from sys import exit
 from importlib import import_module
 
@@ -11,7 +12,7 @@ class SensorLoader():
     def __init__(self, sensorConfig):
         self.sensorConfig = sensorConfig
 
-    def get_subclasses(mod,cls):
+    def get_subclasses(self, mod, cls):
         for name, obj in inspect.getmembers(mod):
             if hasattr(obj, "__bases__") and cls in obj.__bases__:
                 return obj
