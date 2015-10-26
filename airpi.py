@@ -9,7 +9,7 @@ import inspect
 import os
 from importlib import import_module
 from sys import exit
-from sensors import sensor
+from sensors import sensorLoader
 from outputs import output
 
 def get_subclasses(mod,cls):
@@ -30,64 +30,8 @@ sensorNames = sensorConfig.sections()
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM) #Use BCM GPIO numbers.
 
-sensorPlugins = []
-for i in sensorNames:
-	try:
-		try:
-			filename = sensorConfig.get(i,"filename")
-		except Exception:
-			print("Error: no filename config option found for sensor plugin " + i)
-			raise
-		try:
-			enabled = sensorConfig.getboolean(i,"enabled")
-		except Exception:
-			enabled = True
-
-		#if enabled, load the plugin
-		if enabled:
-			try:
-				mod = import_module('sensors.'+filename)
-			except Exception:
-				print("Error: could not import sensor module " + filename)
-				raise
-
-			try:
-				sensorClass = get_subclasses(mod,sensor.Sensor)
-				if sensorClass == None:
-					raise AttributeError
-			except Exception:
-				print("Error: could not find a subclass of sensor.Sensor in module " + filename)
-				raise
-
-			try:
-				reqd = sensorClass.requiredData
-			except Exception:
-				reqd =  []
-			try:
-				opt = sensorClass.optionalData
-			except Exception:
-				opt = []
-
-			pluginData = {}
-
-			class MissingField(Exception): pass
-
-			for requiredField in reqd:
-				if sensorConfig.has_option(i,requiredField):
-					pluginData[requiredField]=sensorConfig.get(i,requiredField)
-				else:
-					print "Error: Missing required field '" + requiredField + "' for sensor plugin " + i
-					raise MissingField
-			for optionalField in opt:
-				if sensorConfig.has_option(i,optionalField):
-					pluginData[optionalField]=sensorConfig.get(i,optionalField)
-			instClass = sensorClass(pluginData)
-			sensorPlugins.append(instClass)
-			print ("Success: Loaded sensor plugin " + i)
-	except Exception as e: #add specific exception for missing module
-		print("Error: Did not import sensor plugin " + i )
-		raise e
-
+sensorLoad = sensorLoader.sensorLoader(sensorConfig)
+sensorPlugins = sensorLoad()
 
 if not os.path.isfile("outputs.cfg"):
 	print "Unable to access config file: outputs.cfg"
