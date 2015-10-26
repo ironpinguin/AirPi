@@ -25,13 +25,11 @@ if not os.path.isfile('sensors.cfg'):
 sensorConfig = ConfigParser.SafeConfigParser()
 sensorConfig.read('sensors.cfg')
 
-sensorNames = sensorConfig.sections()
-
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM) #Use BCM GPIO numbers.
 
-sensorLoad = sensorLoader.sensorLoader(sensorConfig)
-sensorPlugins = sensorLoad()
+loader = sensorLoader.SensorLoader(sensorConfig)
+sensorPlugins = loader()
 
 if not os.path.isfile("outputs.cfg"):
 	print "Unable to access config file: outputs.cfg"

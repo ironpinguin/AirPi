@@ -13,6 +13,7 @@ class SensorLoader():
 
     def loadSensors(self):
         sensorPlugins = []
+        sensorNames = self.sensorConfig.sections()
         for i in sensorNames:
             try:
                 try:
